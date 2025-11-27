@@ -4,24 +4,16 @@
   <title>Task Card App</title>
   <script src="https://miro.com/app/static/sdk/v2/miro.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       padding: 16px;
       margin: 0;
       font-size: 14px;
-      background: #f5f5f5;
+      background: #fafafa;
     }
-    h2 {
-      margin: 0 0 16px 0;
-      font-size: 18px;
-      color: #333;
-    }
-    .field {
-      margin-bottom: 16px;
-    }
+    h2 { margin: 0 0 16px 0; font-size: 18px; color: #333; }
+    .field { margin-bottom: 16px; }
     .field label {
       display: block;
       font-weight: 600;
@@ -29,17 +21,14 @@
       font-size: 12px;
       margin-bottom: 4px;
     }
-    .field input, .field textarea, .field select {
+    .field input, .field textarea {
       width: 100%;
       padding: 8px;
       border: 1px solid #ddd;
       border-radius: 4px;
       font-size: 14px;
     }
-    .field textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
+    .field textarea { min-height: 100px; resize: vertical; }
     button {
       background: #4262ff;
       color: white;
@@ -50,27 +39,22 @@
       font-size: 14px;
       width: 100%;
     }
-    button:hover {
-      background: #3251e3;
-    }
+    button:hover { background: #3251e3; }
     .status {
       margin-top: 12px;
       padding: 8px;
       border-radius: 4px;
       text-align: center;
     }
-    .status.success {
-      background: #d4edda;
-      color: #155724;
-    }
-    .status.error {
-      background: #f8d7da;
-      color: #721c24;
-    }
+    .status.success { background: #d4edda; color: #155724; }
+    .status.error { background: #f8d7da; color: #721c24; }
+    #loader { text-align: center; padding: 40px; }
   </style>
 </head>
 <body>
-  <div id="panel">
+  <div id="loader">Loading...</div>
+
+  <div id="panel" style="display: none;">
     <h2>Edit Task</h2>
 
     <div class="field">
@@ -128,46 +112,68 @@
   </div>
 
   <script>
-    // Google Apps Script Web App URL
     const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzyKFqEzG59RqzOzNp8Cl6D56QulffUxAORsy_A3ZPCLpmMgXCdzKCRwR4TZBDppUZL/exec";
 
     let currentCardId = null;
+    let currentCardData = null;
 
     async function init() {
-      await miro.board.ui.on('app_card:open', async (event) => {
-        const { appCard } = event;
-        currentCardId = appCard.id;
+      const urlParams = new URLSearchParams(window.location.search);
+      const isPanel = urlParams.get('panel') === 'true';
+      const cardId = urlParams.get('cardId');
 
-        // Parse fields from the app card
-        document.getElementById('title').value = appCard.title || '';
-        document.getElementById('description').value = appCard.description || '';
+      if (isPanel && cardId) {
+        // We're in the panel, load the card data
+        await loadCardData(cardId);
+      } else {
+        // We're in the main app context, listen for card clicks
+        await miro.board.ui.on('app_card:open', async (event) => {
+          const { appCard } = event;
+          // Open panel with card ID
+          await miro.board.ui.openPanel({
+            url: `${window.location.origin}${window.location.pathname}?panel=true&cardId=${appCard.id}`
+          });
+        });
 
-        // Parse the fields array
-        if (appCard.fields) {
-          appCard.fields.forEach(field => {
+        document.getElementById('loader').textContent = 'App ready. Click an App Card to edit it.';
+      }
+    }
+
+    async function loadCardData(cardId) {
+      try {
+        currentCardId = cardId;
+        const card = await miro.board.getById(cardId);
+        currentCardData = card;
+
+        document.getElementById('title').value = card.title || '';
+        document.getElementById('description').value = card.description || '';
+
+        if (card.fields) {
+          card.fields.forEach(field => {
             const value = field.value || '';
-
             if (value.startsWith('ID: ')) {
-              document.getElementById('taskId').value = value.replace('ID: ', '');
+              document.getElementById('taskId').value = value.replace('ID: ', '').replace('-', '');
             } else if (value.startsWith('Project: ')) {
-              document.getElementById('project').value = value.replace('Project: ', '');
+              document.getElementById('project').value = value.replace('Project: ', '').replace('-', '');
             } else if (value.startsWith('Workgroup: ')) {
-              document.getElementById('workgroup').value = value.replace('Workgroup: ', '');
+              document.getElementById('workgroup').value = value.replace('Workgroup: ', '').replace('-', '');
             } else if (value.startsWith('Task: ')) {
-              document.getElementById('task').value = value.replace('Task: ', '');
+              document.getElementById('task').value = value.replace('Task: ', '').replace('-', '');
             } else if (value.startsWith('Assignee: ')) {
-              document.getElementById('assignee').value = value.replace('Assignee: ', '');
+              document.getElementById('assignee').value = value.replace('Assignee: ', '').replace('-', '');
             } else if (value.startsWith('Estimate: ')) {
-              document.getElementById('estimate').value = value.replace('Estimate: ', '');
+              document.getElementById('estimate').value = value.replace('Estimate: ', '').replace('-', '');
             } else if (value.startsWith('Time Tracked: ')) {
-              document.getElementById('timeTracked').value = value.replace('Time Tracked: ', '');
+              document.getElementById('timeTracked').value = value.replace('Time Tracked: ', '').replace('-', '');
             }
           });
         }
 
-        // Open the panel
-        await miro.board.ui.openPanel({ url: window.location.href });
-      });
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('panel').style.display = 'block';
+      } catch (error) {
+        document.getElementById('loader').textContent = 'Error loading card: ' + error.message;
+      }
     }
 
     async function saveChanges() {
@@ -190,35 +196,32 @@
 
       try {
         // Send to Google Sheets webhook
-        const response = await fetch(WEBHOOK_URL, {
+        fetch(WEBHOOK_URL, {
           method: 'POST',
           mode: 'no-cors',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         });
 
-        // Update the Miro card too
+        // Update the Miro card
         if (currentCardId) {
           const card = await miro.board.getById(currentCardId);
-          await card.sync({
-            title: data.title,
-            description: data.description,
-            fields: [
-              { value: "ID: " + data.id, fillColor: "#E0E0E0" },
-              { value: "Project: " + data.project, fillColor: "#D1E8FF" },
-              { value: "Workgroup: " + data.workgroup, fillColor: "#D1E8FF" },
-              { value: "Task: " + data.task, fillColor: "#FFF3D1" },
-              { value: "Assignee: " + data.assignee, fillColor: "#D1FFD1" },
-              { value: "Estimate: " + data.estimate, fillColor: "#FFD1D1" },
-              { value: "Time Tracked: " + data.timeTracked, fillColor: "#FFD1D1" }
-            ]
-          });
+          card.title = data.title;
+          card.description = data.description;
+          card.fields = [
+            { value: "ID: " + (data.id || '-'), fillColor: "#E0E0E0" },
+            { value: "Project: " + (data.project || '-'), fillColor: "#D1E8FF" },
+            { value: "Workgroup: " + (data.workgroup || '-'), fillColor: "#D1E8FF" },
+            { value: "Task: " + (data.task || '-'), fillColor: "#FFF3D1" },
+            { value: "Assignee: " + (data.assignee || '-'), fillColor: "#D1FFD1" },
+            { value: "Estimate: " + (data.estimate || '-'), fillColor: "#FFD1D1" },
+            { value: "Time Tracked: " + (data.timeTracked || '-'), fillColor: "#FFD1D1" }
+          ];
+          await card.sync();
         }
 
         statusEl.className = 'status success';
-        statusEl.textContent = 'Saved successfully!';
+        statusEl.textContent = 'Saved!';
       } catch (error) {
         statusEl.className = 'status error';
         statusEl.textContent = 'Error: ' + error.message;
