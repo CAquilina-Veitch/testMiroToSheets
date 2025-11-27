@@ -9,9 +9,7 @@
 
     :root {
       --primary: #4262ff;
-      --primary-dark: #3251e3;
       --success: #10b981;
-      --warning: #f59e0b;
       --danger: #ef4444;
       --bg: #f8fafc;
       --card-bg: #ffffff;
@@ -21,11 +19,13 @@
     }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: var(--bg);
       color: var(--text);
-      font-size: 14px;
-      line-height: 1.5;
+      font-size: 13px;
+      line-height: 1.4;
+      height: 100vh;
+      overflow-y: auto;
     }
 
     #loader {
@@ -34,298 +34,205 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
-      gap: 16px;
+      gap: 12px;
     }
 
     .spinner {
-      width: 40px;
-      height: 40px;
+      width: 32px;
+      height: 32px;
       border: 3px solid var(--border);
       border-top-color: var(--primary);
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     #panel {
       display: none;
-      padding: 20px;
-      max-width: 400px;
-      margin: 0 auto;
+      padding: 16px;
     }
 
     .header {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 24px;
-      padding-bottom: 16px;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
       border-bottom: 1px solid var(--border);
     }
 
     .header-icon {
-      width: 48px;
-      height: 48px;
+      width: 36px;
+      height: 36px;
       background: linear-gradient(135deg, var(--primary), #818cf8);
-      border-radius: 12px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
-      font-size: 20px;
+      font-size: 16px;
     }
 
-    .header-text h2 {
-      font-size: 18px;
-      font-weight: 600;
-    }
+    .header-text h2 { font-size: 16px; font-weight: 600; }
+    .header-text p { font-size: 11px; color: var(--text-muted); }
 
-    .header-text p {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    /* Timer Section */
+    /* Compact Timer */
     .timer-section {
       background: linear-gradient(135deg, #1e293b, #334155);
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 24px;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
       color: white;
       text-align: center;
     }
 
     .timer-display {
-      font-size: 48px;
+      font-size: 32px;
       font-weight: 700;
-      font-family: 'SF Mono', 'Fira Code', monospace;
-      letter-spacing: 2px;
-      margin-bottom: 16px;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      font-family: 'SF Mono', monospace;
+      margin-bottom: 12px;
     }
 
     .timer-buttons {
       display: flex;
-      gap: 12px;
+      gap: 8px;
       justify-content: center;
     }
 
     .timer-btn {
-      padding: 12px 24px;
+      padding: 8px 16px;
       border: none;
-      border-radius: 8px;
-      font-size: 14px;
+      border-radius: 6px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 8px;
-      transition: all 0.2s;
+      gap: 6px;
     }
 
-    .timer-btn.start {
-      background: var(--success);
-      color: white;
-    }
+    .timer-btn.start { background: var(--success); color: white; }
+    .timer-btn.stop { background: var(--danger); color: white; }
+    .timer-btn.reset { background: rgba(255,255,255,0.1); color: white; }
 
-    .timer-btn.start:hover {
-      background: #059669;
-      transform: scale(1.05);
-    }
+    .total-tracked { margin-top: 10px; font-size: 11px; opacity: 0.8; }
+    .total-tracked span { font-weight: 600; }
 
-    .timer-btn.stop {
-      background: var(--danger);
-      color: white;
-    }
-
-    .timer-btn.stop:hover {
-      background: #dc2626;
-      transform: scale(1.05);
-    }
-
-    .timer-btn.reset {
-      background: rgba(255,255,255,0.1);
-      color: white;
-    }
-
-    .timer-btn.reset:hover {
-      background: rgba(255,255,255,0.2);
-    }
-
-    .total-tracked {
-      margin-top: 16px;
-      font-size: 12px;
-      opacity: 0.8;
-    }
-
-    .total-tracked span {
-      font-weight: 600;
-      font-size: 14px;
-    }
-
-    /* Form Fields */
+    /* Compact Fields */
     .section {
       background: var(--card-bg);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     }
 
     .section-title {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
       color: var(--text-muted);
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
 
-    .section-title i {
-      font-size: 14px;
-    }
-
-    .field {
-      margin-bottom: 16px;
-    }
-
-    .field:last-child {
-      margin-bottom: 0;
-    }
+    .field { margin-bottom: 10px; }
+    .field:last-child { margin-bottom: 0; }
 
     .field label {
       display: block;
       font-weight: 500;
-      font-size: 13px;
-      margin-bottom: 6px;
-      color: var(--text);
+      font-size: 12px;
+      margin-bottom: 4px;
     }
 
     .field input, .field textarea, .field select {
       width: 100%;
-      padding: 10px 12px;
+      padding: 8px 10px;
       border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 14px;
-      transition: all 0.2s;
+      border-radius: 6px;
+      font-size: 13px;
       background: var(--bg);
     }
 
     .field input:focus, .field textarea:focus, .field select:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(66, 98, 255, 0.1);
     }
 
-    .field textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
+    .field textarea { min-height: 60px; resize: vertical; }
+    .field input[readonly] { background: var(--border); color: var(--text-muted); }
 
-    .field input[readonly] {
-      background: var(--border);
-      color: var(--text-muted);
-    }
-
-    /* Tags/Pills for dropdowns */
     select {
       appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
-      background-position: right 12px center;
-      padding-right: 36px;
+      background-position: right 10px center;
+      padding-right: 30px;
     }
 
-    /* Save Button */
+    /* Two column layout for small fields */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .two-col .field { margin-bottom: 0; }
+
     .save-btn {
       width: 100%;
-      padding: 14px;
+      padding: 12px;
       background: linear-gradient(135deg, var(--primary), #818cf8);
       color: white;
       border: none;
-      border-radius: 10px;
-      font-size: 15px;
+      border-radius: 8px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      transition: all 0.2s;
-      margin-top: 24px;
+      margin-top: 16px;
     }
 
     .save-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(66, 98, 255, 0.4);
+      opacity: 0.9;
     }
 
-    .save-btn:active {
-      transform: translateY(0);
-    }
-
-    /* Status Messages */
     .status {
-      margin-top: 12px;
-      padding: 12px;
-      border-radius: 8px;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 6px;
       text-align: center;
+      font-size: 12px;
       font-weight: 500;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
     }
 
-    .status.success {
-      background: #d1fae5;
-      color: #065f46;
-    }
-
-    .status.error {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-
-    /* Animations */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .section {
-      animation: fadeIn 0.3s ease forwards;
-    }
-
-    .section:nth-child(2) { animation-delay: 0.1s; }
-    .section:nth-child(3) { animation-delay: 0.2s; }
-    .section:nth-child(4) { animation-delay: 0.3s; }
+    .status.success { background: #d1fae5; color: #065f46; }
+    .status.error { background: #fee2e2; color: #991b1b; }
   </style>
 </head>
 <body>
   <div id="loader">
     <div class="spinner"></div>
-    <p>Loading task...</p>
+    <p>Loading...</p>
   </div>
 
   <div id="panel">
     <div class="header">
-      <div class="header-icon">
-        <i class="fas fa-tasks"></i>
-      </div>
+      <div class="header-icon"><i class="fas fa-tasks"></i></div>
       <div class="header-text">
         <h2>Edit Task</h2>
-        <p>Update task details and track time</p>
+        <p>Update details and track time</p>
       </div>
     </div>
 
-    <!-- Timer Section -->
+    <!-- Timer -->
     <div class="timer-section">
       <div class="timer-display" id="timerDisplay">00:00:00</div>
       <div class="timer-buttons">
@@ -339,23 +246,19 @@
           <i class="fas fa-redo"></i>
         </button>
       </div>
-      <div class="total-tracked">
-        Total tracked: <span id="totalTracked">0h 0m</span>
-      </div>
+      <div class="total-tracked">Total: <span id="totalTracked">0h 0m</span></div>
     </div>
 
     <!-- Basic Info -->
     <div class="section">
-      <div class="section-title">
-        <i class="fas fa-info-circle"></i> Basic Information
-      </div>
+      <div class="section-title"><i class="fas fa-info-circle"></i> Basic Info</div>
       <div class="field">
         <label>Title</label>
-        <input type="text" id="title" placeholder="Task title..." />
+        <input type="text" id="title" />
       </div>
       <div class="field">
         <label>Description</label>
-        <textarea id="description" placeholder="Describe this task..."></textarea>
+        <textarea id="description"></textarea>
       </div>
       <div class="field">
         <label>ID</label>
@@ -365,54 +268,43 @@
 
     <!-- Organization -->
     <div class="section">
-      <div class="section-title">
-        <i class="fas fa-folder"></i> Organization
-      </div>
+      <div class="section-title"><i class="fas fa-folder"></i> Organization</div>
       <div class="field">
         <label>Project</label>
-        <select id="project">
-          <option value="">Select project...</option>
-        </select>
+        <select id="project"><option value="">Select...</option></select>
       </div>
       <div class="field">
         <label>Workgroup</label>
-        <select id="workgroup">
-          <option value="">Select workgroup...</option>
-        </select>
+        <select id="workgroup"><option value="">Select...</option></select>
       </div>
       <div class="field">
         <label>Task Type</label>
-        <input type="text" id="task" placeholder="e.g. Bug fix, Feature..." />
+        <input type="text" id="task" />
       </div>
     </div>
 
-    <!-- Assignment -->
+    <!-- Assignment & Time -->
     <div class="section">
-      <div class="section-title">
-        <i class="fas fa-user"></i> Assignment
+      <div class="section-title"><i class="fas fa-user-clock"></i> Assignment & Time</div>
+      <div class="two-col">
+        <div class="field">
+          <label>Assignee</label>
+          <input type="text" id="assignee" />
+        </div>
+        <div class="field">
+          <label>Due Date</label>
+          <input type="date" id="dueDate" />
+        </div>
       </div>
-      <div class="field">
-        <label>Assignee</label>
-        <input type="text" id="assignee" placeholder="Who's responsible?" />
-      </div>
-      <div class="field">
-        <label>Due Date</label>
-        <input type="date" id="dueDate" />
-      </div>
-    </div>
-
-    <!-- Time -->
-    <div class="section">
-      <div class="section-title">
-        <i class="fas fa-clock"></i> Time Tracking
-      </div>
-      <div class="field">
-        <label>Estimate</label>
-        <input type="text" id="estimate" placeholder="e.g. 2h, 1d..." />
-      </div>
-      <div class="field">
-        <label>Time Tracked</label>
-        <input type="text" id="timeTracked" placeholder="e.g. 1h 30m" />
+      <div class="two-col" style="margin-top: 10px;">
+        <div class="field">
+          <label>Estimate</label>
+          <input type="text" id="estimate" placeholder="e.g. 2h" />
+        </div>
+        <div class="field">
+          <label>Time Tracked</label>
+          <input type="text" id="timeTracked" />
+        </div>
       </div>
     </div>
 
@@ -430,7 +322,6 @@
     let timerSeconds = 0;
     let isRunning = false;
 
-    // Timer Functions
     function formatTime(seconds) {
       const h = Math.floor(seconds / 3600);
       const m = Math.floor((seconds % 3600) / 60);
@@ -459,7 +350,6 @@
       isRunning = true;
       document.getElementById('startBtn').style.display = 'none';
       document.getElementById('stopBtn').style.display = 'flex';
-
       timerInterval = setInterval(() => {
         timerSeconds++;
         document.getElementById('timerDisplay').textContent = formatTime(timerSeconds);
@@ -473,7 +363,6 @@
       document.getElementById('startBtn').style.display = 'flex';
       document.getElementById('stopBtn').style.display = 'none';
 
-      // Add to time tracked
       const currentTracked = parseTimeToMinutes(document.getElementById('timeTracked').value);
       const sessionMinutes = Math.floor(timerSeconds / 60);
       const newTotal = currentTracked + sessionMinutes;
@@ -487,7 +376,6 @@
       document.getElementById('timerDisplay').textContent = '00:00:00';
     }
 
-    // Load dropdown options
     async function loadDropdownOptions() {
       try {
         const response = await fetch(WEBHOOK_URL);
@@ -496,21 +384,25 @@
         const projectSelect = document.getElementById('project');
         const workgroupSelect = document.getElementById('workgroup');
 
-        data.projects.forEach(project => {
-          const option = document.createElement('option');
-          option.value = project;
-          option.textContent = project;
-          projectSelect.appendChild(option);
-        });
+        if (data.projects) {
+          data.projects.forEach(project => {
+            const option = document.createElement('option');
+            option.value = project;
+            option.textContent = project;
+            projectSelect.appendChild(option);
+          });
+        }
 
-        data.workgroups.forEach(workgroup => {
-          const option = document.createElement('option');
-          option.value = workgroup;
-          option.textContent = workgroup;
-          workgroupSelect.appendChild(option);
-        });
+        if (data.workgroups) {
+          data.workgroups.forEach(workgroup => {
+            const option = document.createElement('option');
+            option.value = workgroup;
+            option.textContent = workgroup;
+            workgroupSelect.appendChild(option);
+          });
+        }
       } catch (error) {
-        console.log('Could not load dropdown options:', error);
+        console.log('Could not load dropdowns:', error);
       }
     }
 
@@ -519,11 +411,12 @@
       const isPanel = urlParams.get('panel') === 'true';
       const cardId = urlParams.get('cardId');
 
-      await loadDropdownOptions();
-
       if (isPanel && cardId) {
+        // We're in panel mode - load card data
+        loadDropdownOptions(); // Don't await - load in parallel
         await loadCardData(cardId);
       } else {
+        // Main app context - listen for card clicks and immediately open panel
         await miro.board.ui.on('app_card:open', async (event) => {
           const { appCard } = event;
           await miro.board.ui.openPanel({
@@ -531,7 +424,8 @@
           });
         });
 
-        document.getElementById('loader').innerHTML = '<i class="fas fa-check-circle" style="font-size: 24px; color: var(--success);"></i><p>App ready! Click an App Card to edit.</p>';
+        // Hide loader since we're just waiting
+        document.getElementById('loader').innerHTML = '<p style="color: var(--text-muted);">Click an App Card to edit</p>';
       }
     }
 
@@ -545,21 +439,21 @@
 
         if (card.fields) {
           card.fields.forEach(field => {
-            const value = field.value || '';
-            if (value.startsWith('ID: ')) {
-              document.getElementById('taskId').value = value.replace('ID: ', '').replace('-', '');
-            } else if (value.startsWith('Project: ')) {
-              document.getElementById('project').value = value.replace('Project: ', '').replace('-', '');
-            } else if (value.startsWith('Workgroup: ')) {
-              document.getElementById('workgroup').value = value.replace('Workgroup: ', '').replace('-', '');
-            } else if (value.startsWith('Task: ')) {
-              document.getElementById('task').value = value.replace('Task: ', '').replace('-', '');
-            } else if (value.startsWith('Assignee: ')) {
-              document.getElementById('assignee').value = value.replace('Assignee: ', '').replace('-', '');
-            } else if (value.startsWith('Estimate: ')) {
-              document.getElementById('estimate').value = value.replace('Estimate: ', '').replace('-', '');
-            } else if (value.startsWith('Time Tracked: ')) {
-              const tracked = value.replace('Time Tracked: ', '').replace('-', '');
+            const value = (field.value || '').replace('-', '').trim();
+            if (value.startsWith('ID:')) {
+              document.getElementById('taskId').value = value.replace('ID:', '').trim();
+            } else if (value.startsWith('Project:')) {
+              document.getElementById('project').value = value.replace('Project:', '').trim();
+            } else if (value.startsWith('Workgroup:')) {
+              document.getElementById('workgroup').value = value.replace('Workgroup:', '').trim();
+            } else if (value.startsWith('Task:')) {
+              document.getElementById('task').value = value.replace('Task:', '').trim();
+            } else if (value.startsWith('Assignee:')) {
+              document.getElementById('assignee').value = value.replace('Assignee:', '').trim();
+            } else if (value.startsWith('Estimate:')) {
+              document.getElementById('estimate').value = value.replace('Estimate:', '').trim();
+            } else if (value.startsWith('Time Tracked:')) {
+              const tracked = value.replace('Time Tracked:', '').trim();
               document.getElementById('timeTracked').value = tracked;
               document.getElementById('totalTracked').textContent = tracked || '0h 0m';
             }
@@ -569,14 +463,14 @@
         document.getElementById('loader').style.display = 'none';
         document.getElementById('panel').style.display = 'block';
       } catch (error) {
-        document.getElementById('loader').innerHTML = `<i class="fas fa-exclamation-circle" style="font-size: 24px; color: var(--danger);"></i><p>Error: ${error.message}</p>`;
+        document.getElementById('loader').innerHTML = '<p style="color: var(--danger);">Error: ' + error.message + '</p>';
       }
     }
 
     async function saveChanges() {
       const statusEl = document.getElementById('status');
       statusEl.className = 'status';
-      statusEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+      statusEl.innerHTML = 'Saving...';
 
       const data = {
         id: document.getElementById('taskId').value,
@@ -616,10 +510,12 @@
         }
 
         statusEl.className = 'status success';
-        statusEl.innerHTML = '<i class="fas fa-check-circle"></i> Saved successfully!';
+        statusEl.innerHTML = 'Saved!';
+
+        setTimeout(() => { statusEl.innerHTML = ''; statusEl.className = ''; }, 2000);
       } catch (error) {
         statusEl.className = 'status error';
-        statusEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Error: ' + error.message;
+        statusEl.innerHTML = 'Error: ' + error.message;
       }
     }
 
