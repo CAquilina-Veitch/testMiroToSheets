@@ -3,111 +3,422 @@
 <head>
   <title>Task Card App</title>
   <script src="https://miro.com/app/static/sdk/v2/miro.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #4262ff;
+      --primary-dark: #3251e3;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+    }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      padding: 16px;
-      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
       font-size: 14px;
-      background: #fafafa;
+      line-height: 1.5;
     }
-    h2 { margin: 0 0 16px 0; font-size: 18px; color: #333; }
-    .field { margin-bottom: 16px; }
-    .field label {
-      display: block;
-      font-weight: 600;
-      color: #666;
-      font-size: 12px;
-      margin-bottom: 4px;
+
+    #loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      gap: 16px;
     }
-    .field input, .field textarea {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 14px;
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
     }
-    .field textarea { min-height: 100px; resize: vertical; }
-    button {
-      background: #4262ff;
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    #panel {
+      display: none;
+      padding: 20px;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--primary), #818cf8);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-      width: 100%;
+      font-size: 20px;
     }
-    button:hover { background: #3251e3; }
-    .status {
-      margin-top: 12px;
-      padding: 8px;
-      border-radius: 4px;
+
+    .header-text h2 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .header-text p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Timer Section */
+    .timer-section {
+      background: linear-gradient(135deg, #1e293b, #334155);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      color: white;
       text-align: center;
     }
-    .status.success { background: #d4edda; color: #155724; }
-    .status.error { background: #f8d7da; color: #721c24; }
-    #loader { text-align: center; padding: 40px; }
+
+    .timer-display {
+      font-size: 48px;
+      font-weight: 700;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    .timer-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .timer-btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .timer-btn.start {
+      background: var(--success);
+      color: white;
+    }
+
+    .timer-btn.start:hover {
+      background: #059669;
+      transform: scale(1.05);
+    }
+
+    .timer-btn.stop {
+      background: var(--danger);
+      color: white;
+    }
+
+    .timer-btn.stop:hover {
+      background: #dc2626;
+      transform: scale(1.05);
+    }
+
+    .timer-btn.reset {
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+
+    .timer-btn.reset:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .total-tracked {
+      margin-top: 16px;
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    .total-tracked span {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    /* Form Fields */
+    .section {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title i {
+      font-size: 14px;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    .field label {
+      display: block;
+      font-weight: 500;
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .field input, .field textarea, .field select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.2s;
+      background: var(--bg);
+    }
+
+    .field input:focus, .field textarea:focus, .field select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(66, 98, 255, 0.1);
+    }
+
+    .field textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .field input[readonly] {
+      background: var(--border);
+      color: var(--text-muted);
+    }
+
+    /* Tags/Pills for dropdowns */
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
+
+    /* Save Button */
+    .save-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--primary), #818cf8);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+      margin-top: 24px;
+    }
+
+    .save-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(66, 98, 255, 0.4);
+    }
+
+    .save-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Status Messages */
+    .status {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .status.success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status.error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section {
+      animation: fadeIn 0.3s ease forwards;
+    }
+
+    .section:nth-child(2) { animation-delay: 0.1s; }
+    .section:nth-child(3) { animation-delay: 0.2s; }
+    .section:nth-child(4) { animation-delay: 0.3s; }
   </style>
 </head>
 <body>
-  <div id="loader">Loading...</div>
+  <div id="loader">
+    <div class="spinner"></div>
+    <p>Loading task...</p>
+  </div>
 
-  <div id="panel" style="display: none;">
-    <h2>Edit Task</h2>
-
-    <div class="field">
-      <label>Title</label>
-      <input type="text" id="title" />
+  <div id="panel">
+    <div class="header">
+      <div class="header-icon">
+        <i class="fas fa-tasks"></i>
+      </div>
+      <div class="header-text">
+        <h2>Edit Task</h2>
+        <p>Update task details and track time</p>
+      </div>
     </div>
 
-    <div class="field">
-      <label>Description</label>
-      <textarea id="description"></textarea>
+    <!-- Timer Section -->
+    <div class="timer-section">
+      <div class="timer-display" id="timerDisplay">00:00:00</div>
+      <div class="timer-buttons">
+        <button class="timer-btn start" id="startBtn" onclick="startTimer()">
+          <i class="fas fa-play"></i> Start
+        </button>
+        <button class="timer-btn stop" id="stopBtn" onclick="stopTimer()" style="display: none;">
+          <i class="fas fa-pause"></i> Stop
+        </button>
+        <button class="timer-btn reset" onclick="resetTimer()">
+          <i class="fas fa-redo"></i>
+        </button>
+      </div>
+      <div class="total-tracked">
+        Total tracked: <span id="totalTracked">0h 0m</span>
+      </div>
     </div>
 
-    <div class="field">
-      <label>ID</label>
-      <input type="text" id="taskId" readonly style="background: #eee;" />
+    <!-- Basic Info -->
+    <div class="section">
+      <div class="section-title">
+        <i class="fas fa-info-circle"></i> Basic Information
+      </div>
+      <div class="field">
+        <label>Title</label>
+        <input type="text" id="title" placeholder="Task title..." />
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <textarea id="description" placeholder="Describe this task..."></textarea>
+      </div>
+      <div class="field">
+        <label>ID</label>
+        <input type="text" id="taskId" readonly />
+      </div>
     </div>
 
-    <div class="field">
-      <label>Project</label>
-      <input type="text" id="project" />
+    <!-- Organization -->
+    <div class="section">
+      <div class="section-title">
+        <i class="fas fa-folder"></i> Organization
+      </div>
+      <div class="field">
+        <label>Project</label>
+        <select id="project">
+          <option value="">Select project...</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Workgroup</label>
+        <select id="workgroup">
+          <option value="">Select workgroup...</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Task Type</label>
+        <input type="text" id="task" placeholder="e.g. Bug fix, Feature..." />
+      </div>
     </div>
 
-    <div class="field">
-      <label>Workgroup</label>
-      <input type="text" id="workgroup" />
+    <!-- Assignment -->
+    <div class="section">
+      <div class="section-title">
+        <i class="fas fa-user"></i> Assignment
+      </div>
+      <div class="field">
+        <label>Assignee</label>
+        <input type="text" id="assignee" placeholder="Who's responsible?" />
+      </div>
+      <div class="field">
+        <label>Due Date</label>
+        <input type="date" id="dueDate" />
+      </div>
     </div>
 
-    <div class="field">
-      <label>Task</label>
-      <input type="text" id="task" />
+    <!-- Time -->
+    <div class="section">
+      <div class="section-title">
+        <i class="fas fa-clock"></i> Time Tracking
+      </div>
+      <div class="field">
+        <label>Estimate</label>
+        <input type="text" id="estimate" placeholder="e.g. 2h, 1d..." />
+      </div>
+      <div class="field">
+        <label>Time Tracked</label>
+        <input type="text" id="timeTracked" placeholder="e.g. 1h 30m" />
+      </div>
     </div>
 
-    <div class="field">
-      <label>Assignee</label>
-      <input type="text" id="assignee" />
-    </div>
-
-    <div class="field">
-      <label>Due Date</label>
-      <input type="date" id="dueDate" />
-    </div>
-
-    <div class="field">
-      <label>Estimate</label>
-      <input type="text" id="estimate" />
-    </div>
-
-    <div class="field">
-      <label>Time Tracked</label>
-      <input type="text" id="timeTracked" />
-    </div>
-
-    <button onclick="saveChanges()">Save Changes</button>
+    <button class="save-btn" onclick="saveChanges()">
+      <i class="fas fa-save"></i> Save Changes
+    </button>
     <div id="status"></div>
   </div>
 
@@ -115,27 +426,112 @@
     const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzyKFqEzG59RqzOzNp8Cl6D56QulffUxAORsy_A3ZPCLpmMgXCdzKCRwR4TZBDppUZL/exec";
 
     let currentCardId = null;
-    let currentCardData = null;
+    let timerInterval = null;
+    let timerSeconds = 0;
+    let isRunning = false;
+
+    // Timer Functions
+    function formatTime(seconds) {
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const s = seconds % 60;
+      return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+
+    function parseTimeToMinutes(timeStr) {
+      if (!timeStr) return 0;
+      let minutes = 0;
+      const hourMatch = timeStr.match(/(\d+)\s*h/i);
+      const minMatch = timeStr.match(/(\d+)\s*m/i);
+      if (hourMatch) minutes += parseInt(hourMatch[1]) * 60;
+      if (minMatch) minutes += parseInt(minMatch[1]);
+      return minutes;
+    }
+
+    function formatMinutesToDisplay(totalMinutes) {
+      const h = Math.floor(totalMinutes / 60);
+      const m = totalMinutes % 60;
+      return `${h}h ${m}m`;
+    }
+
+    function startTimer() {
+      if (isRunning) return;
+      isRunning = true;
+      document.getElementById('startBtn').style.display = 'none';
+      document.getElementById('stopBtn').style.display = 'flex';
+
+      timerInterval = setInterval(() => {
+        timerSeconds++;
+        document.getElementById('timerDisplay').textContent = formatTime(timerSeconds);
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if (!isRunning) return;
+      isRunning = false;
+      clearInterval(timerInterval);
+      document.getElementById('startBtn').style.display = 'flex';
+      document.getElementById('stopBtn').style.display = 'none';
+
+      // Add to time tracked
+      const currentTracked = parseTimeToMinutes(document.getElementById('timeTracked').value);
+      const sessionMinutes = Math.floor(timerSeconds / 60);
+      const newTotal = currentTracked + sessionMinutes;
+      document.getElementById('timeTracked').value = formatMinutesToDisplay(newTotal);
+      document.getElementById('totalTracked').textContent = formatMinutesToDisplay(newTotal);
+    }
+
+    function resetTimer() {
+      stopTimer();
+      timerSeconds = 0;
+      document.getElementById('timerDisplay').textContent = '00:00:00';
+    }
+
+    // Load dropdown options
+    async function loadDropdownOptions() {
+      try {
+        const response = await fetch(WEBHOOK_URL);
+        const data = await response.json();
+
+        const projectSelect = document.getElementById('project');
+        const workgroupSelect = document.getElementById('workgroup');
+
+        data.projects.forEach(project => {
+          const option = document.createElement('option');
+          option.value = project;
+          option.textContent = project;
+          projectSelect.appendChild(option);
+        });
+
+        data.workgroups.forEach(workgroup => {
+          const option = document.createElement('option');
+          option.value = workgroup;
+          option.textContent = workgroup;
+          workgroupSelect.appendChild(option);
+        });
+      } catch (error) {
+        console.log('Could not load dropdown options:', error);
+      }
+    }
 
     async function init() {
       const urlParams = new URLSearchParams(window.location.search);
       const isPanel = urlParams.get('panel') === 'true';
       const cardId = urlParams.get('cardId');
 
+      await loadDropdownOptions();
+
       if (isPanel && cardId) {
-        // We're in the panel, load the card data
         await loadCardData(cardId);
       } else {
-        // We're in the main app context, listen for card clicks
         await miro.board.ui.on('app_card:open', async (event) => {
           const { appCard } = event;
-          // Open panel with card ID
           await miro.board.ui.openPanel({
             url: `${window.location.origin}${window.location.pathname}?panel=true&cardId=${appCard.id}`
           });
         });
 
-        document.getElementById('loader').textContent = 'App ready. Click an App Card to edit it.';
+        document.getElementById('loader').innerHTML = '<i class="fas fa-check-circle" style="font-size: 24px; color: var(--success);"></i><p>App ready! Click an App Card to edit.</p>';
       }
     }
 
@@ -143,7 +539,6 @@
       try {
         currentCardId = cardId;
         const card = await miro.board.getById(cardId);
-        currentCardData = card;
 
         document.getElementById('title').value = card.title || '';
         document.getElementById('description').value = card.description || '';
@@ -164,7 +559,9 @@
             } else if (value.startsWith('Estimate: ')) {
               document.getElementById('estimate').value = value.replace('Estimate: ', '').replace('-', '');
             } else if (value.startsWith('Time Tracked: ')) {
-              document.getElementById('timeTracked').value = value.replace('Time Tracked: ', '').replace('-', '');
+              const tracked = value.replace('Time Tracked: ', '').replace('-', '');
+              document.getElementById('timeTracked').value = tracked;
+              document.getElementById('totalTracked').textContent = tracked || '0h 0m';
             }
           });
         }
@@ -172,14 +569,14 @@
         document.getElementById('loader').style.display = 'none';
         document.getElementById('panel').style.display = 'block';
       } catch (error) {
-        document.getElementById('loader').textContent = 'Error loading card: ' + error.message;
+        document.getElementById('loader').innerHTML = `<i class="fas fa-exclamation-circle" style="font-size: 24px; color: var(--danger);"></i><p>Error: ${error.message}</p>`;
       }
     }
 
     async function saveChanges() {
       const statusEl = document.getElementById('status');
       statusEl.className = 'status';
-      statusEl.textContent = 'Saving...';
+      statusEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
 
       const data = {
         id: document.getElementById('taskId').value,
@@ -195,7 +592,6 @@
       };
 
       try {
-        // Send to Google Sheets webhook
         fetch(WEBHOOK_URL, {
           method: 'POST',
           mode: 'no-cors',
@@ -203,7 +599,6 @@
           body: JSON.stringify(data)
         });
 
-        // Update the Miro card
         if (currentCardId) {
           const card = await miro.board.getById(currentCardId);
           card.title = data.title;
@@ -221,10 +616,10 @@
         }
 
         statusEl.className = 'status success';
-        statusEl.textContent = 'Saved!';
+        statusEl.innerHTML = '<i class="fas fa-check-circle"></i> Saved successfully!';
       } catch (error) {
         statusEl.className = 'status error';
-        statusEl.textContent = 'Error: ' + error.message;
+        statusEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Error: ' + error.message;
       }
     }
 
